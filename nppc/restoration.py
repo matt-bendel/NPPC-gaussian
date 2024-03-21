@@ -132,7 +132,7 @@ class RestorationModel(object):
 
         ## Set parametric model
         ## --------------------
-        upscale_factor = self.x_shape[-1] // self.x_distorted_shape[-1]
+        upscale_factor = 1
 
         if net_type == 'unet':
             ## Vanilla U-Net
