@@ -202,6 +202,8 @@ class UNet(nn.Module):
 class ResLinear(nn.Module):
     def __init__(self, d):
         super().__init__()
+        self.max_scale_factor = 1
+
         self.layers = nn.Sequential(
             nn.Flatten(),
             nn.Linear(d, d),
