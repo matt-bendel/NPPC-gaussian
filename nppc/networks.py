@@ -199,7 +199,7 @@ class UNet(nn.Module):
 
         return x
 
-class ResLinear(nn.module):
+class ResLinear(nn.Module):
     def __init__(self, d):
         super().__init__()
         self.layers = nn.Sequential(
