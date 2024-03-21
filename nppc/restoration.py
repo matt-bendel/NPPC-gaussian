@@ -372,7 +372,7 @@ class GaussianInpainting(nn.Module):
         return x
 
     def project(self, x):
-        x = x * self.mask
+        x = x * (1 - self.mask)
         return x
 
 
