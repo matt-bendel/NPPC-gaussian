@@ -76,7 +76,7 @@ class DataTransform:
         self.cov = e_vecs @ np.diag(e_vals) @ e_vecs.T
 
     def __call__(self, x):
-        x = x.to(torch.float32)
+        x = x
 
         # posterior = Posterior(10, self.mu, self.cov, 0.001, y.numpy())
 
