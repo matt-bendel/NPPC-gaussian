@@ -199,6 +199,17 @@ class UNet(nn.Module):
 
         return x
 
+class ResLinear(nn.module):
+    def __init__(self, d):
+        super().__init__()
+        self.layers = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(d, d),
+        )
+
+    def forward(self, y):
+        '''Forward pass'''
+        return self.layers(y)
 
 class ResUNet(nn.Module):
     def __init__(

@@ -15,6 +15,7 @@ import torch.nn.functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
 import torchinfo
 
+from data.lightning.GaussianDataModule import GaussianDataModule
 from . import auxil
 from . import datasets
 from . import networks
@@ -28,6 +29,7 @@ class RestorationModel(object):
             data_folder,
             distortion_type,
             net_type,
+            d,
             img_size=None,
             store_dataset=False,
             loss_type='mse',
@@ -53,6 +55,7 @@ class RestorationModel(object):
         self.device = device
         self.input_args = input_args
         self.ddp = auxil.DDPManager()
+        self.d = d
         self.extra_data = {}
 
         self.loss_type = loss_type
@@ -72,6 +75,9 @@ class RestorationModel(object):
         elif dataset == 'celeba_srflow':
             self.data_module = datasets.CelebASRFlowDataModule(data_folders=data_folder, scale=8, store_dataset=store_dataset)
 
+        elif dataset == 'gaussian':
+            self.data_module = GaussianDataModule(d)
+            self.data_module.setup()
         else:
             raise Exception(f'Unsupported dataset: "{dataset}"')
 
@@ -103,6 +109,12 @@ class RestorationModel(object):
 
         elif distortion_type == 'distorted_dataset':
             self.distortion_model = None
+
+        elif distortion_type == 'gaussian_1':
+            mask = torch.ones(self.x_shape)
+            mask[:, :, np.arange(d // 2) * 2] = 0
+
+            self.distortion_model = GaussianInpainting(mask=mask.to(self.device), d=self.d)
 
         else:
             raise Exception(f'Unsupported distortion_type: "{distortion_type}"')
@@ -159,6 +171,9 @@ class RestorationModel(object):
                 n_blocks=16,
                 upscale_factor=upscale_factor,
             )
+
+        elif net_type == 'linear':
+            base_net = networks.ResLinear(self.d)
 
         else:
             raise Exception(f'Unsupported net_type: "{net_type}"')
@@ -327,6 +342,30 @@ class Inpainting(nn.Module):
     def forward(self, x, random_seed=None):
         return self.distort(x, random_seed=random_seed)
     
+    def naive_restore(self, x):
+        return x
+
+    def project(self, x):
+        x = x * self.mask
+        return x
+
+class GaussianInpainting(nn.Module):
+    def __init__(
+            self,
+            mask,
+            d
+    ):
+        super().__init__()
+        self.d = d
+        self.register_buffer('mask', mask)
+
+    def distort(self, x, random_seed=None):
+        x = x * self.mask + torch.from_numpy(np.random.multivariate_normal(torch.zeros(self.d), torch.eye(self.M) * 0.001)).to(x.device) + 0.0 * torch.ones_like(x)
+        return x
+
+    def forward(self, x, random_seed=None):
+        return self.distort(x, random_seed=random_seed)
+
     def naive_restore(self, x):
         return x
 
