@@ -124,6 +124,8 @@ class RestorationModel(object):
             x_distorted = self.distortion_model(x[None])
         else:
             x_distorted = self.data_module.train_set[0][1].to(self.device)
+
+        print(x_distorted.shape)
         self.x_distorted_shape = x_distorted.shape[1:]
         self.naive_restore = self.distortion_model.naive_restore
         self.project = self.distortion_model.project
