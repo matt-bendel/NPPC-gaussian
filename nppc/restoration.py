@@ -269,22 +269,22 @@ class RestorationWrapper(nn.Module):
     def forward(self, x_distorted):
         x_distorted_org = x_distorted
 
-        if self.offset is not None:
-            x_distorted = x_distorted - self.offset
-        if self.scale is not None:
-            x_distorted = x_distorted / self.scale
+        # if self.offset is not None:
+        #     x_distorted = x_distorted - self.offset
+        # if self.scale is not None:
+        #     x_distorted = x_distorted / self.scale
 
-        padding = self._get_padding(x_distorted, self.pad_base_size)
-        if padding is not None:
-            x_distorted = F.pad(x_distorted, tuple(padding))
+        # padding = self._get_padding(x_distorted, self.pad_base_size)
+        # if padding is not None:
+        #     x_distorted = F.pad(x_distorted, tuple(padding))
 
         x_restored = self.net(x_distorted)
 
-        if padding is not None:
-            x_restored = F.pad(x_restored, tuple(-padding))  # pylint: disable=invalid-unary-operand-type
-
-        if self.scale is not None:
-            x_restored = x_restored * self.scale
+        # if padding is not None:
+        #     x_restored = F.pad(x_restored, tuple(-padding))  # pylint: disable=invalid-unary-operand-type
+        #
+        # if self.scale is not None:
+        #     x_restored = x_restored * self.scale
 
         x_restored = self.naive_restore_func(x_distorted_org) + self.project_func(x_restored)
 
