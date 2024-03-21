@@ -360,7 +360,7 @@ class GaussianInpainting(nn.Module):
         self.register_buffer('mask', mask)
 
     def distort(self, x, random_seed=None):
-        x = x * self.mask + torch.from_numpy(np.random.multivariate_normal(torch.zeros(self.d), torch.eye(self.M) * 0.001)).to(x.device) + 0.0 * torch.ones_like(x)
+        x = x * self.mask + torch.from_numpy(np.random.multivariate_normal(torch.zeros(self.d), torch.eye(self.d) * 0.001)).to(x.device) + 0.0 * torch.ones_like(x)
         return x
 
     def forward(self, x, random_seed=None):
