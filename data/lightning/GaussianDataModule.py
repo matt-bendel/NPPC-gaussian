@@ -90,6 +90,8 @@ class GaussianDataModule(pl.LightningDataModule):
         super().__init__()
         self.batch_size = 64
         self.num_workers = 1
+        self.mean = None
+        self.std = None
         # Server
         mu = np.load(f'/home/bendel.8/Git_Repos/NPPC-gaussian/data/stats_{d}d/gt_mu.npy')
         e_vals = np.abs(np.load(f'/home/bendel.8/Git_Repos/NPPC-gaussian/data/stats_{d}d/gt_e_vals.npy'))
