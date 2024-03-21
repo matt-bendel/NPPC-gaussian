@@ -42,7 +42,7 @@ def main():
     trainer = nppc.RestorationTrainer(
         model=model,
         batch_size=256,
-        output_folder='./results/gaussian_inpainting/restoration/',
+        output_folder=f'./results/gaussian_inpainting/restoration_{d}/',
         max_benchmark_samples=256,
     )
     trainer.train(
