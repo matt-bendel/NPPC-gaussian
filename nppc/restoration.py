@@ -750,20 +750,6 @@ class RestorationTrainer(object):
             summary = str(summary)
             training_data['summary'] = summary
 
-            ## Prepare images
-            ## --------------
-            training_data['imgs'] = {}
-            for field, batch in (('fixed', self.fixed_batch), ('valid', self.valid_batch)):
-                with auxil.EncapsulatedRandomState(random_seed):
-                    x_org, x_distorted = model.process_batch(batch)
-
-                training_data['imgs'][f'fix_batch_{field}'] = auxil.imgs_to_grid(torch.stack((
-                    auxil.sample_to_width(x_org, width=780),
-                    auxil.sample_to_width(model.naive_restore(x_distorted), width=780),
-                )))
-                zeros = auxil.sample_to_width(x_org, width=780) * 0
-                training_data['imgs'][f'batch_{field}'] = auxil.imgs_to_grid(torch.stack(([zeros] * 2)))
-
             ## Prepare figures
             ## ---------------
             training_data['figs'] = {}
@@ -814,11 +800,11 @@ class RestorationTrainer(object):
 
         err = x_org - x_restored
 
-        batch_img = auxil.imgs_to_grid(torch.stack((
-            auxil.sample_to_width(x_restored, width=780),
-            auxil.sample_to_width(auxil.scale_img(err), width=780),
-        )))
-        model.training_data['imgs'][f'batch_{field}'] = batch_img
+        # batch_img = auxil.imgs_to_grid(torch.stack((
+        #     auxil.sample_to_width(x_restored, width=780),
+        #     auxil.sample_to_width(auxil.scale_img(err), width=780),
+        # )))
+        # model.training_data['imgs'][f'batch_{field}'] = batch_img
 
         ## Update console message
         ## ----------------------
@@ -855,7 +841,6 @@ class RestorationTrainer(object):
                     now=datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     network_summary=model.training_data['summary'],
                 ),
-                imgs={key: auxil.img_to_png_str(img) for key, img in model.training_data['imgs'].items()},
                 figs={key: fig.to_plotly_json() for key, fig in model.training_data['figs'].items()},
             )
 
