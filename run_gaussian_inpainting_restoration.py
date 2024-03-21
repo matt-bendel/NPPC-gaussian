@@ -11,7 +11,7 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_group = parser.add_argument_group('model')
     parser_group.add_argument(f'--device', default='cuda:0', type=str)
-    parser_group.add_argument(f'--d', default=1, type=int)
+    parser_group.add_argument(f'--d', default=10, type=int)
     args = parser.parse_args()
 
     d = args.d

@@ -112,7 +112,7 @@ class RestorationModel(object):
 
         elif distortion_type == 'gaussian_1':
             mask = torch.ones(self.x_shape)
-            mask[:, :, np.arange(d // 2) * 2] = 0
+            mask[np.arange(d // 2) * 2] = 0
 
             self.distortion_model = GaussianInpainting(mask=mask.to(self.device), d=self.d)
 
